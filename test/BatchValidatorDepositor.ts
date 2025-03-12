@@ -266,7 +266,7 @@ describe("BatchValidatorDepositor", function () {
         .withArgs(pubkeys[0], withdrawal_credentials[0], littleEndianCollateral, signatures[0], '0x0000000000000000');
     });
 
-    it("Should emit multiple events on deposit", async function () {
+    it("Should emit multiple events on deposits", async function () {
       const { deposit, batch, depositOwner, batchOwner } = await loadFixture(deployDepositContractsFixture);
 
       const pubkeys = ['0x8e2d31d00f491bb3b11bc83a3f610f942758dffd1ff1ddaa8307add299733b170f71fb26000c4f2d5efdab67254413fa','0x8ab3332e945acce729f33d2bb256fa3c0828258ba04ba66c7bbb1ec8ca2757961d783b4caff54ff599ac125b20b635c8'];
@@ -286,6 +286,28 @@ describe("BatchValidatorDepositor", function () {
         .withArgs(pubkeys[0], withdrawal_credentials[0], toLittleEndian(collateral[0]/1000000000), signatures[0], '0x0000000000000000')
         .and.to.emit(deposit, "DepositEvent")
         .withArgs(pubkeys[1], withdrawal_credentials[1], toLittleEndian(collateral[1]/1000000000), signatures[1], '0x0100000000000000');
+    });
+
+    it("Should handle 100 deposits", async function () {
+      const { deposit, batch, depositOwner, batchOwner } = await loadFixture(deployDepositContractsFixture);
+
+      const pubkeys = new Array(100).fill('0x8e2d31d00f491bb3b11bc83a3f610f942758dffd1ff1ddaa8307add299733b170f71fb26000c4f2d5efdab67254413fa');
+      const withdrawal_credentials = new Array(100).fill('0x010000000000000000000000ac83393be3e6490c5959847cabb0ff81c656427b');
+      const signatures = new Array(100).fill('0xb9561533e0f8d2cd3741c701f7d337d947b3e3c1dc14ca673fac7952c0707abe4cf2eb93330cb3f78063e618548ea40a084c66f58c3e8183286d65b63a9f9f3e411f09d2a2e66d2d4f3fd2a2b297a088ec706525265ac4954785a50ef3c80ce2');
+      const deposit_data_roots = new Array(100).fill('0x0678d05c612d015d0b527841e295f91759185dddf7b08640d74e3d933695bac8');
+      const collateral = new Array(100).fill('32000000000000000000');
+
+      await expect(batch.deposit(
+              pubkeys,
+              withdrawal_credentials,
+              signatures,
+              deposit_data_roots,
+              collateral,
+              { value: '3200000000000000000000' },
+      )).to.emit(deposit, "DepositEvent")
+        .withArgs(pubkeys[0], withdrawal_credentials[0], toLittleEndian(collateral[0]/1000000000), signatures[0], '0x0000000000000000')
+        .and.to.emit(deposit, "DepositEvent")
+        .withArgs(pubkeys[99], withdrawal_credentials[99], toLittleEndian(collateral[99]/1000000000), signatures[99], '0x6300000000000000');
     });
   });
 

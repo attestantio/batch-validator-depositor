@@ -1,13 +1,37 @@
-# Sample Hardhat Project
+# Ethereum batch valdiator depositor
 
-This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, and a Hardhat Ignition module that deploys that contract.
+This contract allows multiple Ethereum validators to be deposited in a single transaction.
 
-Try running some of the following tasks:
+The contract is deployed at the following addresses:
+
+holesky: `0x81723BC1872C440454BC88D85bA31C7F75d15ae1`
+
+## Tests
+
+Contract tests can be run as follows:
 
 ```shell
-npx hardhat help
 npx hardhat test
-REPORT_GAS=true npx hardhat test
-npx hardhat node
-npx hardhat ignition deploy ./ignition/modules/BatchValidatorDepositor.ts
+```
+
+## Deploying
+
+Deploying the contract to a custom network requires updating `hardhat.config.ts` to include the network definition.
+
+The following variables are required to be set when deploying the contract:
+
+- `RPC_ENDPOINT_URL`: the URL to an Ethereum execution node on the given network; defaults to `http://localhost:8545`
+- `PRIVATE_KEY`: the private key of the Ethereum address that will deploy the contract (note that the address needs to be funded to create the contract)
+
+These variables should be set before deployment, for example:
+
+```shell
+npx hardhat vars set RPC_ENDPOINT_URL
+npx hardhat vars set PRIVATE_KEY
+```
+
+Once the above has been configured, the contract can be deployed as follows:
+
+```shell
+npx hardhat ignition deploy --network <network> ignition/modules/BatchValidatorDepositor.ts
 ```

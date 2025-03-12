@@ -11,10 +11,18 @@ const config: HardhatUserConfig = {
       }
     }
   },
+  defaultNetwork: "hardhat",
   networks: {
+    hardhat: {},
+    mainnet: {
+      chainId: 1,
+      url: vars.get("RPC_ENDPOINT_URL", "http://localhost:8545"),
+      accounts: vars.has("PRIVATE_KEY") ? [vars.get("PRIVATE_KEY")] : [],
+    },
     holesky: {
-      url: process.env.HOLESKY_RPC_ENDPOINT_URL,
-      accounts: [process.env.HOLESKY_PRIVATE_KEY]
+      chainId: 17000,
+      url: vars.get("RPC_ENDPOINT_URL", "http://localhost:8545"),
+      accounts: vars.has("PRIVATE_KEY") ? [vars.get("PRIVATE_KEY")] : [],
     }
   }
 };
