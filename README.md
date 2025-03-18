@@ -1,4 +1,4 @@
-# Ethereum batch valdiator depositor
+# Ethereum batch validator depositor
 
 This contract allows multiple Ethereum validators to be deposited in a single transaction.
 
