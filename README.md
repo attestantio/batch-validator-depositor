@@ -5,6 +5,7 @@ This contract allows multiple Ethereum validators to be deposited in a single tr
 The contract is deployed at the following addresses:
 
 holesky: `0x81723BC1872C440454BC88D85bA31C7F75d15ae1`
+hoodi: `0xCdF49FC9134B7029d90d01B92e59014cedc9dE6A`
 
 ## Tests
 
@@ -35,3 +36,31 @@ Once the above has been configured, the contract can be deployed as follows:
 ```shell
 npx hardhat ignition deploy --network <network> ignition/modules/BatchValidatorDepositor.ts
 ```
+
+After the deployment has completed the variables should be removed:
+
+```shell
+npx hardhat vars delete RPC_ENDPOINT_URL
+npx hardhat vars delete PRIVATE_KEY
+```
+
+
+## Using
+
+The contract comes with a single operational function, `deposit`.  The signature of `deposit` is:
+
+```solidity
+deposit(bytes[] calldata pubkeys, bytes[] calldata withdrawal_credentials, bytes[] calldata signatures, bytes32[] calldata deposit_data_roots, uint256[] calldata collateral)
+```
+
+The parameters are as follows:
+
+- `pubkeys` an array of 48-byte public keys
+- `withdrawal_credentials` an array of 32-byte withdrawal credentials
+- `signatures` an array of 96-byte signatures
+- `deposit_data_roots` an array of byte32 deposit data roots
+- `collateral` an array of uint256 wei-amount collaterals
+
+The individual deposits are made from each set of values in the arrays, allowing a mixture of items such as withdrawal credentials and collateral.
+
+The function will allow deposits from 1 to 100 validators.
