@@ -4,8 +4,8 @@ This contract allows multiple Ethereum validators to be deposited in a single tr
 
 The contract is deployed at the following addresses:
 
-holesky: `0x81723BC1872C440454BC88D85bA31C7F75d15ae1`
-hoodi: `0xCdF49FC9134B7029d90d01B92e59014cedc9dE6A`
+- holesky: `0x81723BC1872C440454BC88D85bA31C7F75d15ae1`
+- hoodi: `0xCdF49FC9134B7029d90d01B92e59014cedc9dE6A`
 
 ## Tests
 
