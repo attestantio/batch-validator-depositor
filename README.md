@@ -64,3 +64,9 @@ The parameters are as follows:
 The individual deposits are made from each set of values in the arrays, allowing a mixture of items such as withdrawal credentials and collateral.
 
 The function will allow deposits from 1 to 100 validators.
+
+## Disclaimers
+
+This repository is provided under the MIT license.  See the LICENSE file in this repository for details.
+
+This contract has not been audited.  Use it at your own risk.  
