@@ -9,7 +9,7 @@ import { hre } from "hardhat";
 
 describe("BatchValidatorDepositor", function () {
   async function deployDepositContractsFixture() {
-    const [depositDeployer, batchDeployer] = await ethers.getSigners();
+    const [depositDeployer, batchDeployer, submitter] = await ethers.getSigners();
 
     const abi = require('./depositcontract/abi.json');
     const bytecode = require('./depositcontract/bytecode.json');
@@ -22,7 +22,7 @@ describe("BatchValidatorDepositor", function () {
     const BatchWithDeployer = Batch.connect(batchDeployer);
     const batch = await BatchWithDeployer.deploy(false, deposit.target);
 
-    return { deposit, batch, depositDeployer ,batchDeployer};
+    return { deposit, batch, depositDeployer ,batchDeployer, submitter};
   }
 
   describe("Deployment", function () {
@@ -34,7 +34,7 @@ describe("BatchValidatorDepositor", function () {
 
   describe("Validation", function () {
     it("Should not allow no public keys", async function () {
-      const { deposit, batch, depositOwner, batchOwner } = await loadFixture(deployDepositContractsFixture);
+      const { deposit, batch, depositOwner, batchOwner, submitter } = await loadFixture(deployDepositContractsFixture);
 
       const pubkeys = [];
       const withdrawal_credentials = ['0x0000000000000000000000000000000000000000000000000000000000000000'];
@@ -42,7 +42,7 @@ describe("BatchValidatorDepositor", function () {
       const deposit_data_roots = ['0x0000000000000000000000000000000000000000000000000000000000000000'];
       const collateral = ['32000000000000000000'];
 
-      await expect(batch.deposit(
+      await expect(batch.connect(submitter).deposit(
               pubkeys,
               withdrawal_credentials,
               signatures,
@@ -55,7 +55,7 @@ describe("BatchValidatorDepositor", function () {
     });
 
     it("Should not allow too many public keys", async function () {
-      const { deposit, batch, depositOwner, batchOwner } = await loadFixture(deployDepositContractsFixture);
+      const { deposit, batch, depositOwner, batchOwner, submitter } = await loadFixture(deployDepositContractsFixture);
 
       const pubkeys = new Array(101).fill('0x000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000');
       const withdrawal_credentials = ['0x0000000000000000000000000000000000000000000000000000000000000000'];
@@ -63,7 +63,7 @@ describe("BatchValidatorDepositor", function () {
       const deposit_data_roots = ['0x0000000000000000000000000000000000000000000000000000000000000000'];
       const collateral = ['32000000000000000000'];
 
-      await expect(batch.deposit(
+      await expect(batch.connect(submitter).deposit(
               pubkeys,
               withdrawal_credentials,
               signatures,
@@ -76,7 +76,7 @@ describe("BatchValidatorDepositor", function () {
     });
 
     it("Should not allow incorrect number of withdrawal credentials", async function () {
-      const { deposit, batch, depositOwner, batchOwner } = await loadFixture(deployDepositContractsFixture);
+      const { deposit, batch, depositOwner, batchOwner, submitter } = await loadFixture(deployDepositContractsFixture);
 
       const pubkeys = ['0x000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000'];
       const withdrawal_credentials = [];
@@ -84,7 +84,7 @@ describe("BatchValidatorDepositor", function () {
       const deposit_data_roots = ['0x0000000000000000000000000000000000000000000000000000000000000000'];
       const collateral = ['32000000000000000000'];
 
-      await expect(batch.deposit(
+      await expect(batch.connect(submitter).deposit(
               pubkeys,
               withdrawal_credentials,
               signatures,
@@ -97,7 +97,7 @@ describe("BatchValidatorDepositor", function () {
     });
 
     it("Should not allow incorrect number of signatures", async function () {
-      const { deposit, batch, depositOwner, batchOwner } = await loadFixture(deployDepositContractsFixture);
+      const { deposit, batch, depositOwner, batchOwner, submitter } = await loadFixture(deployDepositContractsFixture);
 
       const pubkeys = ['0x000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000'];
       const withdrawal_credentials = ['0x0000000000000000000000000000000000000000000000000000000000000000'];
@@ -105,7 +105,7 @@ describe("BatchValidatorDepositor", function () {
       const deposit_data_roots = ['0x0000000000000000000000000000000000000000000000000000000000000000'];
       const collateral = ['32000000000000000000'];
 
-      await expect(batch.deposit(
+      await expect(batch.connect(submitter).deposit(
               pubkeys,
               withdrawal_credentials,
               signatures,
@@ -118,7 +118,7 @@ describe("BatchValidatorDepositor", function () {
     });
 
     it("Should not allow incorrect number of deposit data roots", async function () {
-      const { deposit, batch, depositOwner, batchOwner } = await loadFixture(deployDepositContractsFixture);
+      const { deposit, batch, depositOwner, batchOwner, submitter } = await loadFixture(deployDepositContractsFixture);
 
       const pubkeys = ['0x000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000'];
       const withdrawal_credentials = ['0x0000000000000000000000000000000000000000000000000000000000000000'];
@@ -126,7 +126,7 @@ describe("BatchValidatorDepositor", function () {
       const deposit_data_roots = [];
       const collateral = ['32000000000000000000'];
 
-      await expect(batch.deposit(
+      await expect(batch.connect(submitter).deposit(
               pubkeys,
               withdrawal_credentials,
               signatures,
@@ -139,7 +139,7 @@ describe("BatchValidatorDepositor", function () {
     });
 
     it("Should not allow incorrect number of collateral", async function () {
-      const { deposit, batch, depositOwner, batchOwner } = await loadFixture(deployDepositContractsFixture);
+      const { deposit, batch, depositOwner, batchOwner, submitter } = await loadFixture(deployDepositContractsFixture);
 
       const pubkeys = ['0x000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000'];
       const withdrawal_credentials = ['0x0000000000000000000000000000000000000000000000000000000000000000'];
@@ -147,7 +147,7 @@ describe("BatchValidatorDepositor", function () {
       const deposit_data_roots = ['0x0000000000000000000000000000000000000000000000000000000000000000'];
       const collateral = [];
 
-      await expect(batch.deposit(
+      await expect(batch.connect(submitter).deposit(
               pubkeys,
               withdrawal_credentials,
               signatures,
@@ -160,7 +160,7 @@ describe("BatchValidatorDepositor", function () {
     });
 
     it("Should not allow incorrect value", async function () {
-      const { deposit, batch, depositOwner, batchOwner } = await loadFixture(deployDepositContractsFixture);
+      const { deposit, batch, depositOwner, batchOwner, submitter } = await loadFixture(deployDepositContractsFixture);
 
       const pubkeys = ['0x000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000'];
       const withdrawal_credentials = ['0x0000000000000000000000000000000000000000000000000000000000000000'];
@@ -168,7 +168,7 @@ describe("BatchValidatorDepositor", function () {
       const deposit_data_roots = ['0x0000000000000000000000000000000000000000000000000000000000000000'];
       const collateral = ['32000000000000000000'];
 
-      await expect(batch.deposit(
+      await expect(batch.connect(submitter).deposit(
               pubkeys,
               withdrawal_credentials,
               signatures,
@@ -181,7 +181,7 @@ describe("BatchValidatorDepositor", function () {
     });
 
     it("Should not allow incorrect pubkey length", async function () {
-      const { deposit, batch, depositOwner, batchOwner } = await loadFixture(deployDepositContractsFixture);
+      const { deposit, batch, depositOwner, batchOwner, submitter } = await loadFixture(deployDepositContractsFixture);
 
       const pubkeys = ['0x0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000'];
       const withdrawal_credentials = ['0x0000000000000000000000000000000000000000000000000000000000000000'];
@@ -189,7 +189,7 @@ describe("BatchValidatorDepositor", function () {
       const deposit_data_roots = ['0x0000000000000000000000000000000000000000000000000000000000000000'];
       const collateral = ['32000000000000000000'];
 
-      await expect(batch.deposit(
+      await expect(batch.connect(submitter).deposit(
               pubkeys,
               withdrawal_credentials,
               signatures,
@@ -202,7 +202,7 @@ describe("BatchValidatorDepositor", function () {
     });
 
     it("Should not allow incorrect withdrawal credentials length", async function () {
-      const { deposit, batch, depositOwner, batchOwner } = await loadFixture(deployDepositContractsFixture);
+      const { deposit, batch, depositOwner, batchOwner, submitter } = await loadFixture(deployDepositContractsFixture);
 
       const pubkeys = ['0x000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000'];
       const withdrawal_credentials = ['0x00000000000000000000000000000000000000000000000000000000000000'];
@@ -210,7 +210,7 @@ describe("BatchValidatorDepositor", function () {
       const deposit_data_roots = ['0x0000000000000000000000000000000000000000000000000000000000000000'];
       const collateral = ['32000000000000000000'];
 
-      await expect(batch.deposit(
+      await expect(batch.connect(submitter).deposit(
               pubkeys,
               withdrawal_credentials,
               signatures,
@@ -223,7 +223,7 @@ describe("BatchValidatorDepositor", function () {
     });
 
     it("Should not allow incorrect signature length", async function () {
-      const { deposit, batch, depositOwner, batchOwner } = await loadFixture(deployDepositContractsFixture);
+      const { deposit, batch, depositOwner, batchOwner, submitter } = await loadFixture(deployDepositContractsFixture);
 
       const pubkeys = ['0x000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000'];
       const withdrawal_credentials = ['0x0000000000000000000000000000000000000000000000000000000000000000'];
@@ -231,7 +231,7 @@ describe("BatchValidatorDepositor", function () {
       const deposit_data_roots = ['0x0000000000000000000000000000000000000000000000000000000000000000'];
       const collateral = ['32000000000000000000'];
 
-      await expect(batch.deposit(
+      await expect(batch.connect(submitter).deposit(
               pubkeys,
               withdrawal_credentials,
               signatures,
@@ -246,7 +246,7 @@ describe("BatchValidatorDepositor", function () {
 
   describe("Events", function () {
     it("Should emit an event on deposit", async function () {
-      const { deposit, batch, depositOwner, batchOwner } = await loadFixture(deployDepositContractsFixture);
+      const { deposit, batch, depositOwner, batchOwner, submitter} = await loadFixture(deployDepositContractsFixture);
 
       const pubkeys = ['0x8e2d31d00f491bb3b11bc83a3f610f942758dffd1ff1ddaa8307add299733b170f71fb26000c4f2d5efdab67254413fa'];
       const withdrawal_credentials = ['0x010000000000000000000000ac83393be3e6490c5959847cabb0ff81c656427b'];
@@ -255,7 +255,7 @@ describe("BatchValidatorDepositor", function () {
       const collateral = ['32000000000000000000'];
 
       const littleEndianCollateral = toLittleEndian(collateral[0]/1000000000)
-      await expect(batch.deposit(
+      await expect(batch.connect(submitter).deposit(
               pubkeys,
               withdrawal_credentials,
               signatures,
@@ -263,11 +263,13 @@ describe("BatchValidatorDepositor", function () {
               collateral,
               { value: '32000000000000000000' },
       )).to.emit(deposit, "DepositEvent")
-        .withArgs(pubkeys[0], withdrawal_credentials[0], littleEndianCollateral, signatures[0], '0x0000000000000000');
+        .withArgs(pubkeys[0], withdrawal_credentials[0], littleEndianCollateral, signatures[0], '0x0000000000000000')
+        .and.to.emit(batch, "DepositEvent")
+        .withArgs(submitter.address, 1, '32000000000000000000');
     });
 
     it("Should emit multiple events on deposits", async function () {
-      const { deposit, batch, depositOwner, batchOwner } = await loadFixture(deployDepositContractsFixture);
+      const { deposit, batch, depositOwner, batchOwner, submitter } = await loadFixture(deployDepositContractsFixture);
 
       const pubkeys = ['0x8e2d31d00f491bb3b11bc83a3f610f942758dffd1ff1ddaa8307add299733b170f71fb26000c4f2d5efdab67254413fa','0x8ab3332e945acce729f33d2bb256fa3c0828258ba04ba66c7bbb1ec8ca2757961d783b4caff54ff599ac125b20b635c8'];
       const withdrawal_credentials = ['0x010000000000000000000000ac83393be3e6490c5959847cabb0ff81c656427b','0x020000000000000000000000ac83393be3e6490c5959847cabb0ff81c656427b'];
@@ -275,7 +277,7 @@ describe("BatchValidatorDepositor", function () {
       const deposit_data_roots = ['0x0678d05c612d015d0b527841e295f91759185dddf7b08640d74e3d933695bac8','0xb170f00db9f85ce62afb3eb5e0c7a518d369aba8bc0fbcd39c4d0f27fd055f03'];
       const collateral = ['32000000000000000000','2048000000000000000000'];
 
-      await expect(batch.deposit(
+      await expect(batch.connect(submitter).deposit(
               pubkeys,
               withdrawal_credentials,
               signatures,
@@ -285,11 +287,13 @@ describe("BatchValidatorDepositor", function () {
       )).to.emit(deposit, "DepositEvent")
         .withArgs(pubkeys[0], withdrawal_credentials[0], toLittleEndian(collateral[0]/1000000000), signatures[0], '0x0000000000000000')
         .and.to.emit(deposit, "DepositEvent")
-        .withArgs(pubkeys[1], withdrawal_credentials[1], toLittleEndian(collateral[1]/1000000000), signatures[1], '0x0100000000000000');
+        .withArgs(pubkeys[1], withdrawal_credentials[1], toLittleEndian(collateral[1]/1000000000), signatures[1], '0x0100000000000000')
+        .and.to.emit(batch, "DepositEvent")
+        .withArgs(submitter.address, 2, '2080000000000000000000');
     });
 
     it("Should handle 100 deposits", async function () {
-      const { deposit, batch, depositOwner, batchOwner } = await loadFixture(deployDepositContractsFixture);
+      const { deposit, batch, depositOwner, batchOwner, submitter } = await loadFixture(deployDepositContractsFixture);
 
       const pubkeys = new Array(100).fill('0x8e2d31d00f491bb3b11bc83a3f610f942758dffd1ff1ddaa8307add299733b170f71fb26000c4f2d5efdab67254413fa');
       const withdrawal_credentials = new Array(100).fill('0x010000000000000000000000ac83393be3e6490c5959847cabb0ff81c656427b');
@@ -297,7 +301,7 @@ describe("BatchValidatorDepositor", function () {
       const deposit_data_roots = new Array(100).fill('0x0678d05c612d015d0b527841e295f91759185dddf7b08640d74e3d933695bac8');
       const collateral = new Array(100).fill('32000000000000000000');
 
-      await expect(batch.deposit(
+      await expect(batch.connect(submitter).deposit(
               pubkeys,
               withdrawal_credentials,
               signatures,
@@ -307,7 +311,9 @@ describe("BatchValidatorDepositor", function () {
       )).to.emit(deposit, "DepositEvent")
         .withArgs(pubkeys[0], withdrawal_credentials[0], toLittleEndian(collateral[0]/1000000000), signatures[0], '0x0000000000000000')
         .and.to.emit(deposit, "DepositEvent")
-        .withArgs(pubkeys[99], withdrawal_credentials[99], toLittleEndian(collateral[99]/1000000000), signatures[99], '0x6300000000000000');
+        .withArgs(pubkeys[99], withdrawal_credentials[99], toLittleEndian(collateral[99]/1000000000), signatures[99], '0x6300000000000000')
+        .and.to.emit(batch, "DepositEvent")
+        .withArgs(submitter.address, 100, '3200000000000000000000');
     });
   });
 

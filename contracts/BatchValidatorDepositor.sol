@@ -10,10 +10,9 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Pausable.sol";
-import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "../contracts/interfaces/IDepositContract.sol";
 
-contract BatchValidatorDepositor is ReentrancyGuard, Pausable, Ownable {
+contract BatchValidatorDepositor is Pausable, Ownable {
 
     /**
      * @dev Eth2 Deposit Contract address.
@@ -68,7 +67,7 @@ contract BatchValidatorDepositor is ReentrancyGuard, Pausable, Ownable {
 
         uint256 nodesAmount = pubkeys.length;
 
-        require(nodesAmount > 0 && nodesAmount <= 100, "BatchValidatorDepositor: you can deposit only 1 to 100 nodes per transaction");
+        require(nodesAmount >= nodesMinAmount && nodesAmount <= nodesMaxAmount, "BatchValidatorDepositor: you can deposit only 1 to 100 nodes per transaction");
 
         require(
             withdrawal_credentials.length == nodesAmount &&
@@ -94,10 +93,9 @@ contract BatchValidatorDepositor is ReentrancyGuard, Pausable, Ownable {
                 signatures[i],
                 deposit_data_roots[i]
             );
-
         }
 
-        emit DepositEvent(msg.sender, nodesAmount);
+        emit DepositEvent(msg.sender, nodesAmount, msg.value);
     }
 
     /**
@@ -122,6 +120,6 @@ contract BatchValidatorDepositor is ReentrancyGuard, Pausable, Ownable {
       _unpause();
     }
 
-    event DepositEvent(address from, uint256 nodesAmount);
+    event DepositEvent(address from, uint256 nodesAmount, uint256 totalCollateral);
 }
 
