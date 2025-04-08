@@ -4,8 +4,13 @@ This contract allows multiple Ethereum validators to be deposited in a single tr
 
 The contract is deployed at the following addresses:
 
+- mainnet: `0x16BF86Efb14FA03a3A207efC03Df5Ed29094a838`
+- hoodi: `0x9c2880C58e2F7bc7f1Bcbf0e0d220B8a3d6cc5a9`
 - holesky: `0x81723BC1872C440454BC88D85bA31C7F75d15ae1`
-- hoodi: `0xCdF49FC9134B7029d90d01B92e59014cedc9dE6A`
+
+## Audit
+
+This contract has been audited by Dedaub.  The audit report can be found at https://dedaub.com/audits/ethereum-foundation/ef-batch-validator-depositor-april-02-2025/
 
 ## Tests
 
@@ -31,11 +36,17 @@ npx hardhat vars set RPC_ENDPOINT_URL
 npx hardhat vars set PRIVATE_KEY
 ```
 
+In addition, if you want the contract to be verified on etherscan you need the following additional variable:
+
+- `ETHERSCAN_API_KEY`: the API key for an etherscan account
+
 Once the above has been configured, the contract can be deployed as follows:
 
 ```shell
-npx hardhat ignition deploy --network <network> ignition/modules/BatchValidatorDepositor.ts
+npx hardhat ignition deploy --network <network> --verify ignition/modules/BatchValidatorDepositor.ts
 ```
+
+Remove the `--verify` flag if you have not configured your Etherscan API key or do not want the contract to be verified.
 
 After the deployment has completed the variables should be removed:
 
@@ -68,5 +79,3 @@ The function will allow deposits from 1 to 100 validators.
 ## Disclaimers
 
 This repository is provided under the MIT license.  See the LICENSE file in this repository for details.
-
-This contract has not been audited.  Use it at your own risk.  
